@@ -34,6 +34,15 @@ Parse the X video file name and metadata, save them to a CSV file, and then impo
 | -m       | --mode    | Writing mode: a (append/update) or w (overwrite). | a        |
 | -n       | --num     | Number of ThreadPool workers (threads).           | 12       |
 
+## PowerShell Scripts
+
+For convenience, two PowerShell scripts are included to quickly run the parser for specific categories.  
+The included `.ps1` scripts use `$PSScriptRoot` for relative path resolution. You can run them from any directory without manually changing your working directory:
+
+```powershell
+.\p.ps1
+```
+
 ## Format
 
 | Parameter           | Example Value                                                                                                 |

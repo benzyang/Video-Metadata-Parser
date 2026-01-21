@@ -152,32 +152,35 @@ def get_res_label(width: int, height: int) -> str:
 
 def parse_filename_metadata(filename: str):
     '''get collection & cast'''
-    match = re.search(r'^(.+?)\.(?:(?:\d{2}\.){2}\d{2})\.(.*)$', filename)
+    match = re.search(r'^(.+?)\.(?:(?:\d{2}\.){2}\d{2}|\d{4})\.(.*)$', filename)
     # ^(.+?)
-    #     ^ 从头开始匹配
-    #     (.+?) 非贪婪匹配, 匹配字符直到遇到第一个符合后面条件的日期格式为止
+    #     ^             从头开始匹配
+    #     (.+?)         非贪婪匹配, 匹配字符直到遇到第一个符合后面条件的日期格式为止
     #
-    # \. 匹配点
+    # \.                匹配点
     #
-    # ((?:\d{2}\.){2}\d{2})
-    #   外层的 () 是一个捕获组，用来提取完整的日期
-    #   (?:\d{2}\.){2} 匹配前两段日期
-    #   \d{2} 匹配最后一段日期
+    # (?:(?:\d{2}\.){2}\d{2}|\d{4})
+    #   外层的 () 是一个捕获组，用来提取完整的日期 (26.01.01)
+    #   (?:\d{2}\.){2}  匹配前两段日期
+    #   \d{2}           匹配最后一段日期
+    #   | 或
+    #   \d{4}           匹配 4 位数字 (2026)
     #
-    # (.*)$ 匹配剩下的所有内容直到行尾
+    # (.*)$             匹配剩下的所有内容直到行尾
     #
-    # ?: 不捕获内容
+    # ?:                不捕获内容
 
-    collection = "Unknown"
+    collection = filename.split('.')[0] if '.' in filename else "Unknown"
     cast = "Unknown"
 
     if match:
         collection = match.group(1).replace('.', ' ')
-        content_after_date = match.group(2).replace(' ', '.')
+        content_after_date = match.group(2)
 
         matches = content_after_date.split('.')
-        if 'XXX' in content_after_date.upper():
-            matches = matches[: matches.index('XXX')]
+        upper_matches = [m.upper() for m in matches]
+        if 'XXX' in upper_matches:
+            matches = matches[: upper_matches.index('XXX')]
 
         if len(matches) <= 3:
             cast = ' '.join(matches[:])
@@ -261,7 +264,7 @@ def process_single_video(path_video: Path, tag: str) -> Optional[Dict]:
             c_time = path_video.stat().st_mtime
         create_time_str = datetime.fromtimestamp(c_time).strftime('%Y/%m/%d %H:%M')
 
-        collection, cast = parse_filename_metadata(name)
+        collection, cast = parse_filename_metadata(name.replace(' ', '.'))
         tag_to = 'PRT' if 'PRT' in name.upper() else 'XC'
 
         meta = get_metadata_ffprobe(path_video)
@@ -339,7 +342,7 @@ def main():
                     result = future.result()
                     if result:
                         info_list.append(result)
-                    pbar.set_description(f"Parsed {file_path.name[:10]}...")
+                    pbar.set_description(f"Parsed {file_path.name[:20]}...")
                 except Exception as e:
                     logging.error(f"Thread error on {file_path}: {e}")
                 finally:

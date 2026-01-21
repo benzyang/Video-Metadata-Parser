@@ -1,3 +1,4 @@
-& mamba activate yang
+$BaseDir = $PSScriptRoot
+$PythonExe = "D:\Miniconda3\envs\yang\python.exe"
 
-& python D:\MyPYWorkspace\Tools\sql\parsex.py -i E:\qBittorrent\Downloads\newx -c D:\MyPYWorkspace\Tools\sql\csv\x.csv
+& $PythonExe "$BaseDir\parsex.py" -i "E:\qBittorrent\Downloads\newx" -c "$BaseDir\csv\x.csv"
