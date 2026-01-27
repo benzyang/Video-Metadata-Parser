@@ -252,7 +252,7 @@ def get_metadata_ffprobe(file_path: Path):
 
 def process_single_video(path_video: Path, tag: str) -> Optional[Dict]:
     try:
-        name = path_video.name
+        name = path_video.stem
         size_bytes = path_video.stat().st_size
         size_str = format_size(size_bytes)
 
