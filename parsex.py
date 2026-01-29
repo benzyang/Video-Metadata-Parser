@@ -252,7 +252,7 @@ def get_metadata_ffprobe(file_path: Path):
 
 def process_single_video(path_video: Path, tag: str) -> Optional[Dict]:
     try:
-        name = path_video.stem
+        name = path_video.name
         size_bytes = path_video.stat().st_size
         size_str = format_size(size_bytes)
 
@@ -264,7 +264,7 @@ def process_single_video(path_video: Path, tag: str) -> Optional[Dict]:
             c_time = path_video.stat().st_mtime
         create_time_str = datetime.fromtimestamp(c_time).strftime('%Y/%m/%d %H:%M')
 
-        collection, cast = parse_filename_metadata(name.replace(' ', '.'))
+        collection, cast = parse_filename_metadata(path_video.stem.replace(' ', '.'))
         tag_to = 'PRT' if 'PRT' in name.upper() else 'XC'
 
         meta = get_metadata_ffprobe(path_video)
